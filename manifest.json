@@ -1,7 +1,7 @@
 {
-  "name": "Volleyball Scoreboard",
-  "short_name": "VBall Score",
-  "description": "Volleyball scoreboard for best-of-3 set matches",
+  "name": "Synergy V-Board",
+  "short_name": "Synergy V-Board",
+  "description": "Synergy volleyball scoreboard for best-of-3 set matches",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
