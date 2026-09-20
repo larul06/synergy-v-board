@@ -38,20 +38,19 @@ header h1 {
 
 .board {
   display: flex;
-  gap: 20px;
+  gap: 16px;
   align-items: stretch;
   width: 100%;
-  max-width: 900px;
-  flex-wrap: wrap;
+  max-width: 700px;
   justify-content: center;
 }
 
 .team {
   background: var(--card);
   border-radius: 16px;
-  padding: 24px;
-  flex: 1;
-  min-width: 260px;
+  padding: 20px 14px;
+  flex: 1 1 0;
+  min-width: 0;
   text-align: center;
   box-shadow: 0 8px 20px rgba(0,0,0,0.3);
   border-top: 6px solid transparent;
@@ -114,13 +113,16 @@ header h1 {
 .team-b .plus { background: var(--team-b); }
 .team-b .minus { background: #991b1b; }
 
-.center-info {
+.center-info,
+.match-footer {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-width: 160px;
   gap: 14px;
+  width: 100%;
+  max-width: 500px;
+  margin-top: 24px;
 }
 
 .set-indicator {
@@ -185,4 +187,16 @@ header h1 {
   color: #22c55e;
   text-align: center;
   min-height: 2rem;
+}
+
+@media (max-width: 480px) {
+  body { padding: 12px; }
+  header h1 { font-size: 1.4rem; }
+  .board { gap: 10px; }
+  .team { padding: 14px 8px; }
+  .team-name { font-size: 1rem; }
+  .score { font-size: 3rem; margin: 6px 0 14px 0; }
+  .btn { font-size: 1.2rem; padding: 8px 14px; }
+  .set-row { grid-template-columns: 0.7fr 0.8fr 1.1fr; font-size: 0.8rem; padding: 6px 8px; }
+  .winner-banner { font-size: 1.2rem; margin-top: 14px; }
 }
