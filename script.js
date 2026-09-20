@@ -136,4 +136,21 @@ el.resetBtn.addEventListener('click', () => {
   }
 });
 
+const shareLink = document.getElementById('shareLink');
+const qrModal = document.getElementById('qrModal');
+const qrCloseBtn = document.getElementById('qrCloseBtn');
+
+shareLink.addEventListener('click', (e) => {
+  e.preventDefault();
+  qrModal.classList.add('open');
+});
+
+qrCloseBtn.addEventListener('click', () => {
+  qrModal.classList.remove('open');
+});
+
+qrModal.addEventListener('click', (e) => {
+  if (e.target === qrModal) qrModal.classList.remove('open');
+});
+
 render();

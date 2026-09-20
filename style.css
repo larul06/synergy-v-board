@@ -199,6 +199,56 @@ header h1 {
   min-height: 2rem;
 }
 
+.share-link {
+  color: #60a5fa;
+  text-decoration: none;
+  font-size: 0.95rem;
+  padding: 6px 4px;
+}
+
+.share-link:hover,
+.share-link:active {
+  text-decoration: underline;
+}
+
+.qr-modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.qr-modal.open {
+  display: flex;
+}
+
+.qr-modal-content {
+  background: var(--card);
+  border-radius: 16px;
+  padding: 24px;
+  text-align: center;
+  max-width: 320px;
+  width: 100%;
+  box-shadow: 0 12px 30px rgba(0,0,0,0.5);
+}
+
+.qr-modal-content img {
+  width: 100%;
+  max-width: 260px;
+  border-radius: 8px;
+  background: #fff;
+  padding: 10px;
+}
+
+.qr-modal-content p {
+  color: var(--muted);
+  margin: 14px 0;
+}
+
 @media (max-width: 480px) {
   body { padding: 12px; }
   header h1 { font-size: 1.4rem; }
