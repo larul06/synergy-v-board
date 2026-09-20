@@ -132,11 +132,38 @@ header h1 {
 .set-history {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 6px;
   font-size: 0.9rem;
   color: var(--muted);
   min-height: 20px;
   text-align: center;
+  width: 100%;
+}
+
+.set-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1.4fr;
+  align-items: center;
+  gap: 8px;
+  background: var(--card);
+  border-radius: 8px;
+  padding: 6px 10px;
+}
+
+.set-row.current {
+  background: #334155;
+  color: var(--text);
+  font-weight: bold;
+  box-shadow: 0 0 0 2px #475569 inset;
+}
+
+.set-row.done .set-winner {
+  color: #22c55e;
+  font-weight: bold;
+}
+
+.set-row.pending {
+  opacity: 0.5;
 }
 
 .reset {

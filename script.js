@@ -52,18 +52,33 @@ function render() {
   el.setsB.textContent = `Sets: ${state.setsWon.B}`;
   el.setIndicator.textContent = state.matchOver ? 'Match Over' : `Set ${state.setNumber} (to ${pointsToWin()})`;
 
-  el.setHistory.innerHTML = state.history
-    .map(h => `<div>Set ${h.set}: ${h.A} - ${h.B}</div>`)
-    .join('');
+  const totalSets = 3;
+  const rows = [];
+  for (let s = 1; s <= totalSets; s++) {
+    const completed = state.history.find(h => h.set === s);
+    if (completed) {
+      rows.push(`<div class="set-row done"><span>Set ${s}</span><span>${completed.A} - ${completed.B}</span><span class="set-winner">${teamName(completed.winner)} won</span></div>`);
+    } else if (s === state.setNumber && !state.matchOver) {
+      rows.push(`<div class="set-row current"><span>Set ${s}</span><span>${state.score.A} - ${state.score.B}</span><span class="set-winner">in progress</span></div>`);
+    } else if (s < state.setNumber || state.matchOver) {
+      rows.push(`<div class="set-row"><span>Set ${s}</span><span>&mdash;</span><span></span></div>`);
+    } else {
+      rows.push(`<div class="set-row pending"><span>Set ${s}</span><span>&mdash;</span><span></span></div>`);
+    }
+  }
+  el.setHistory.innerHTML = rows.join('');
 
   document.querySelectorAll('.btn.plus, .btn.minus').forEach(btn => {
     btn.disabled = state.matchOver;
   });
+
+  const setInProgress = !state.matchOver && (state.score.A > 0 || state.score.B > 0);
+  el.resetBtn.textContent = setInProgress ? 'Reset Set' : 'Reset Match';
 }
 
 function nextSet(winner) {
   state.setsWon[winner]++;
-  state.history.push({ set: state.setNumber, A: state.score.A, B: state.score.B });
+  state.history.push({ set: state.setNumber, A: state.score.A, B: state.score.B, winner });
 
   if (state.setsWon[winner] === 2) {
     state.matchOver = true;
@@ -99,7 +114,7 @@ document.querySelectorAll('.btn[data-team]').forEach(btn => {
   });
 });
 
-el.resetBtn.addEventListener('click', () => {
+function resetMatch() {
   state.score = { A: 0, B: 0 };
   state.setsWon = { A: 0, B: 0 };
   state.setNumber = 1;
@@ -107,6 +122,18 @@ el.resetBtn.addEventListener('click', () => {
   state.matchOver = false;
   el.winnerBanner.textContent = '';
   render();
+}
+
+el.resetBtn.addEventListener('click', () => {
+  const setInProgress = !state.matchOver && (state.score.A > 0 || state.score.B > 0);
+  if (setInProgress) {
+    // First press: just clear the current set's score
+    state.score = { A: 0, B: 0 };
+    render();
+  } else {
+    // Set already at 0-0 (or match over): reset the whole match
+    resetMatch();
+  }
 });
 
 render();
