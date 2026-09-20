@@ -23,9 +23,9 @@ const el = {
 };
 
 function pointsToWin() {
-  // Deciding set (3rd set, when sets are 1-1) is played to 15
+  // Burbank Parks & Rec youth volleyball: sets 1-2 play to 21, deciding 3rd set plays to 15
   const isDecidingSet = state.setsWon.A === 1 && state.setsWon.B === 1;
-  return isDecidingSet ? 15 : 25;
+  return isDecidingSet ? 15 : 21;
 }
 
 function teamName(team) {

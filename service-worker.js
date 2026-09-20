@@ -1,4 +1,4 @@
-const CACHE_NAME = 'vball-scoreboard-v3';
+const CACHE_NAME = 'vball-scoreboard-v4';
 const ASSETS = ['./', './index.html', './style.css', './script.js', './manifest.json', './icon.svg'];
 
 self.addEventListener('install', (event) => {
