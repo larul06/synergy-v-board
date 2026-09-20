@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Volleyball Scoreboard</title>
+<link rel="stylesheet" href="style.css">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon.svg">
+<meta name="theme-color" content="#0f172a">
+</head>
+<body>
+  <header>
+    <h1>🏐 Volleyball Scoreboard</h1>
+    <div class="match-status" id="matchStatus">Best of 3 Sets</div>
+  </header>
+
+  <main class="board">
+    <section class="team team-a">
+      <input class="team-name" id="nameA" value="Team A" maxlength="18" />
+      <div class="sets-won" id="setsA">Sets: 0</div>
+      <div class="score" id="scoreA">0</div>
+      <div class="buttons">
+        <button class="btn minus" data-team="A" data-action="dec">−</button>
+        <button class="btn plus" data-team="A" data-action="inc">+</button>
+      </div>
+    </section>
+
+    <section class="center-info">
+      <div class="set-indicator" id="setIndicator">Set 1</div>
+      <div class="set-history" id="setHistory"></div>
+      <button class="btn reset" id="resetBtn">Reset Match</button>
+    </section>
+
+    <section class="team team-b">
+      <input class="team-name" id="nameB" value="Team B" maxlength="18" />
+      <div class="sets-won" id="setsB">Sets: 0</div>
+      <div class="score" id="scoreB">0</div>
+      <div class="buttons">
+        <button class="btn minus" data-team="B" data-action="dec">−</button>
+        <button class="btn plus" data-team="B" data-action="inc">+</button>
+      </div>
+    </section>
+  </main>
+
+  <div class="winner-banner" id="winnerBanner"></div>
+
+  <script src="script.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('service-worker.js').catch(() => {});
+      });
+    }
+  </script>
+</body>
+</html>
