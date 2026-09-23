@@ -1,4 +1,4 @@
-const CACHE_NAME = 'synergy-v-board-v5';
+const CACHE_NAME = 'synergy-v-board-v6';
 const ASSETS = ['./', './index.html', './style.css', './script.js', './manifest.json', './icon.svg', './qr-code.png', './schedule.json'];
 
 self.addEventListener('install', (event) => {

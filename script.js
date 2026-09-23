@@ -34,6 +34,7 @@ const el = {
   matchMeta: document.getElementById('matchMeta'),
   historyPanel: document.getElementById('historyPanel'),
   matchHistoryList: document.getElementById('matchHistoryList'),
+  exportBtn: document.getElementById('exportBtn'),
 };
 
 function pointsToWin() {
@@ -198,6 +199,55 @@ qrModal.addEventListener('click', (e) => {
   if (e.target === qrModal) qrModal.classList.remove('open');
 });
 
+// ---- Export schedule.json update ----
+const exportModal = document.getElementById('exportModal');
+const exportContent = document.getElementById('exportContent');
+const exportCopyBtn = document.getElementById('exportCopyBtn');
+const exportCloseBtn = document.getElementById('exportCloseBtn');
+
+function buildScheduleSnippet(game) {
+  const r = game.result;
+  return [
+    '{',
+    `  "week": ${game.week}, "date": "${game.date}", "time": "${game.time}", "location": "${game.location}",`,
+    `  "opponent": "${game.opponent}", "synergyHome": ${game.synergyHome}, "bye": ${game.bye},`,
+    `  "completed": true,`,
+    `  "result": { "synergySets": [${r.synergySets.join(', ')}], "opponentSets": [${r.opponentSets.join(', ')}], "synergySetsWon": ${r.synergySetsWon}, "opponentSetsWon": ${r.opponentSetsWon}, "winner": "${r.winner}" }`,
+    '}',
+  ].join('\n');
+}
+
+el.exportBtn.addEventListener('click', () => {
+  if (!state.tournamentGame || !state.tournamentGame.result) return;
+  exportContent.textContent = buildScheduleSnippet(state.tournamentGame);
+  exportModal.classList.add('open');
+});
+
+exportCopyBtn.addEventListener('click', async () => {
+  const text = exportContent.textContent;
+  try {
+    await navigator.clipboard.writeText(text);
+    exportCopyBtn.textContent = 'Copied!';
+  } catch {
+    // Clipboard API unavailable — fall back to selecting the text for manual copy.
+    const range = document.createRange();
+    range.selectNodeContents(exportContent);
+    const selection = window.getSelection();
+    selection.removeAllRanges();
+    selection.addRange(range);
+    exportCopyBtn.textContent = 'Selected — copy manually';
+  }
+  setTimeout(() => { exportCopyBtn.textContent = 'Copy'; }, 2000);
+});
+
+exportCloseBtn.addEventListener('click', () => {
+  exportModal.classList.remove('open');
+});
+
+exportModal.addEventListener('click', (e) => {
+  if (e.target === exportModal) exportModal.classList.remove('open');
+});
+
 // ---- Tabs ----
 el.tabs.forEach(btn => {
   btn.addEventListener('click', () => {
@@ -280,6 +330,8 @@ function applyWeek(weekNum) {
   if (game.completed && game.result) {
     loadCompletedResultIntoView(game);
   }
+
+  el.exportBtn.classList.toggle('hidden', !(game.completed && game.result));
 
   render();
 }

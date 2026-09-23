@@ -32,6 +32,7 @@
       <select id="weekSelect"></select>
     </div>
     <div class="tp-meta" id="matchMeta"></div>
+    <button class="export-btn hidden" id="exportBtn" title="Show the schedule.json update for this result">📋 Show schedule.json update</button>
   </section>
 
   <main class="board">
@@ -81,6 +82,15 @@
       <img src="qr-code.png" alt="QR code to open Synergy V-Board" />
       <p>Scan to open Synergy V-Board</p>
       <button class="btn" id="qrCloseBtn">Close</button>
+    </div>
+  </div>
+
+  <div class="qr-modal" id="exportModal">
+    <div class="qr-modal-content export-modal-content">
+      <p class="export-instructions">Open <code>schedule.json</code> in GitHub (mobile app or github.com), find the entry for this week, and replace it with the block below. Then commit directly to <code>main</code>.</p>
+      <pre id="exportContent" class="export-content"></pre>
+      <button class="btn" id="exportCopyBtn">Copy</button>
+      <button class="btn" id="exportCloseBtn">Close</button>
     </div>
   </div>
 

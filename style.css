@@ -127,6 +127,26 @@ header h1 {
   font-size: 0.85rem;
 }
 
+.export-btn {
+  margin-top: 8px;
+  background: none;
+  border: 1px solid #475569;
+  color: var(--muted);
+  font-size: 0.8rem;
+  padding: 5px 12px;
+  border-radius: 999px;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.export-btn:active {
+  transform: scale(0.96);
+}
+
+.export-btn.hidden {
+  display: none;
+}
+
 .board {
   display: flex;
   gap: 10px;
@@ -355,6 +375,36 @@ header h1 {
 .qr-modal-content p {
   color: var(--muted);
   margin: 14px 0;
+}
+
+.export-modal-content {
+  max-width: 420px;
+  text-align: left;
+}
+
+.export-instructions {
+  font-size: 0.85rem;
+}
+
+.export-instructions code {
+  background: #0f172a;
+  padding: 2px 5px;
+  border-radius: 4px;
+}
+
+.export-content {
+  background: #0f172a;
+  color: #e2e8f0;
+  border-radius: 8px;
+  padding: 12px;
+  font-size: 0.78rem;
+  white-space: pre-wrap;
+  word-break: break-word;
+  user-select: text;
+  -webkit-user-select: text;
+  max-height: 40vh;
+  overflow-y: auto;
+  margin: 0 0 14px 0;
 }
 
 .history-panel {
