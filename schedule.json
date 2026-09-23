@@ -1,0 +1,74 @@
+{
+  "division": "Youth Volleyball - 7th & 8th Grade Division",
+  "team": "Synergy",
+  "teams": [
+    "Elite",
+    "Future Stars 7",
+    "Hype",
+    "Magnolia Spikes",
+    "Notorious D.I.G",
+    "So Cal Hotshots - Gold",
+    "So Cal Hotshots - Silver",
+    "SoCal Sunsetters",
+    "Synergy",
+    "The Volleyball Team",
+    "Thunderbolts",
+    "Volley Starz",
+    "Wavez"
+  ],
+  "source": "https://burbankparksandrecreation.teamsidelinesite.com/schedule?divisionid=738745",
+  "games": [
+    {
+      "week": 1, "date": "2026-09-11", "time": "8:00 PM", "location": "Luther Court A",
+      "opponent": "Magnolia Spikes", "synergyHome": false, "bye": false,
+      "completed": true,
+      "result": { "synergySets": [21, 21], "opponentSets": [13, 10], "synergySetsWon": 2, "opponentSetsWon": 0, "winner": "Synergy" }
+    },
+    {
+      "week": 2, "date": "2026-09-18", "time": "8:00 PM", "location": "Luther Court A",
+      "opponent": "Volley Starz", "synergyHome": true, "bye": false,
+      "completed": true,
+      "result": { "synergySets": [21, 21], "opponentSets": [6, 11], "synergySetsWon": 2, "opponentSetsWon": 0, "winner": "Synergy" }
+    },
+    {
+      "week": 3, "date": "2026-09-25", "time": "7:00 PM", "location": "Luther Court B",
+      "opponent": "Wavez", "synergyHome": false, "bye": false,
+      "completed": false, "result": null
+    },
+    {
+      "week": 4, "date": "2026-10-02", "time": "6:00 PM", "location": "Luther Court A",
+      "opponent": "The Volleyball Team", "synergyHome": true, "bye": false,
+      "completed": false, "result": null
+    },
+    {
+      "week": 5, "date": "2026-10-09", "time": "6:00 PM", "location": "Luther Court B",
+      "opponent": "Future Stars 7", "synergyHome": false, "bye": false,
+      "completed": false, "result": null
+    },
+    {
+      "week": 6, "date": "2026-10-16", "time": "8:00 PM", "location": "Luther Court A",
+      "opponent": "Notorious D.I.G", "synergyHome": false, "bye": false,
+      "completed": false, "result": null
+    },
+    {
+      "week": 7, "date": "2026-10-23", "time": "6:00 PM", "location": "Luther Court B",
+      "opponent": "So Cal Hotshots - Gold", "synergyHome": true, "bye": false,
+      "completed": false, "result": null
+    },
+    {
+      "week": 8, "date": "2026-10-30", "time": "7:00 PM", "location": "Luther Court B",
+      "opponent": "Hype", "synergyHome": true, "bye": false,
+      "completed": false, "result": null
+    },
+    {
+      "week": 9, "date": "2026-11-06", "time": "8:00 PM", "location": "Luther Court B",
+      "opponent": "Elite", "synergyHome": false, "bye": false,
+      "completed": false, "result": null
+    },
+    {
+      "week": 10, "date": "2026-11-13", "time": null, "location": null,
+      "opponent": null, "synergyHome": null, "bye": true,
+      "completed": false, "result": null
+    }
+  ]
+}

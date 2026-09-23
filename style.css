@@ -24,6 +24,10 @@ body {
   flex-direction: column;
   align-items: center;
   padding: 20px;
+  padding-top: calc(20px + env(safe-area-inset-top));
+  padding-bottom: calc(20px + env(safe-area-inset-bottom));
+  padding-left: calc(20px + env(safe-area-inset-left));
+  padding-right: calc(20px + env(safe-area-inset-right));
   -webkit-user-select: none;
   user-select: none;
   overscroll-behavior: none;
@@ -44,13 +48,107 @@ header h1 {
   font-size: 1rem;
 }
 
+.tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+  background: var(--card);
+  border-radius: 999px;
+  padding: 4px;
+}
+
+.tab-btn {
+  border: none;
+  background: transparent;
+  color: var(--muted);
+  font-size: 0.95rem;
+  font-weight: bold;
+  padding: 8px 20px;
+  border-radius: 999px;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.tab-btn.active {
+  background: #334155;
+  color: var(--text);
+}
+
+.tournament-panel {
+  width: 100%;
+  max-width: 500px;
+  background: var(--card);
+  border-radius: 12px;
+  padding: 12px 16px;
+  margin-bottom: 16px;
+  text-align: center;
+}
+
+.tournament-panel.hidden,
+.history-panel.hidden {
+  display: none;
+}
+
+.tp-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+
+.tp-row label {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.tp-row select {
+  background: #0f172a;
+  color: var(--text);
+  border: 1px solid #334155;
+  border-radius: 8px;
+  padding: 6px 10px;
+  font-size: 0.95rem;
+  max-width: 100%;
+}
+
+.tp-meta {
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
 .board {
   display: flex;
-  gap: 16px;
-  align-items: stretch;
+  gap: 10px;
+  align-items: center;
   width: 100%;
   max-width: 700px;
   justify-content: center;
+}
+
+.swap-btn {
+  flex: 0 0 auto;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: none;
+  background: #334155;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  align-self: center;
+}
+
+.swap-btn svg {
+  transform: rotate(90deg);
+}
+
+.swap-btn:active {
+  transform: scale(0.92);
 }
 
 .team {
@@ -249,14 +347,61 @@ header h1 {
   margin: 14px 0;
 }
 
+.history-panel {
+  width: 100%;
+  max-width: 500px;
+  margin-top: 20px;
+}
+
+.history-panel h3 {
+  text-align: center;
+  font-size: 1rem;
+  color: var(--muted);
+  margin-bottom: 10px;
+}
+
+.match-history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.match-history-empty {
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.match-history-row {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  grid-template-areas:
+    "week opponent result"
+    "sets sets sets";
+  gap: 4px 10px;
+  background: var(--card);
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 0.85rem;
+}
+
+.mh-week { grid-area: week; color: var(--muted); font-weight: bold; }
+.mh-opponent { grid-area: opponent; }
+.mh-result { grid-area: result; font-weight: bold; text-align: right; }
+.mh-result.won { color: #22c55e; }
+.mh-result.lost { color: #f87171; }
+.mh-sets { grid-area: sets; color: var(--muted); font-size: 0.8rem; }
+
 @media (max-width: 480px) {
   body { padding: 12px; }
   header h1 { font-size: 1.4rem; }
-  .board { gap: 10px; }
+  .board { gap: 6px; }
   .team { padding: 14px 8px; }
   .team-name { font-size: 1rem; }
   .score { font-size: 3rem; margin: 6px 0 14px 0; }
   .btn { font-size: 1.2rem; padding: 8px 14px; }
   .set-row { grid-template-columns: 0.7fr 0.8fr 1.1fr; font-size: 0.8rem; padding: 6px 8px; }
   .winner-banner { font-size: 1.2rem; margin-top: 14px; }
+  .swap-btn { width: 30px; height: 30px; }
+  .tp-row { flex-direction: column; gap: 4px; }
 }

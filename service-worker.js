@@ -1,5 +1,5 @@
-const CACHE_NAME = 'synergy-v-board-v2';
-const ASSETS = ['./', './index.html', './style.css', './script.js', './manifest.json', './icon.svg', './qr-code.png'];
+const CACHE_NAME = 'synergy-v-board-v4';
+const ASSETS = ['./', './index.html', './style.css', './script.js', './manifest.json', './icon.svg', './qr-code.png', './schedule.json'];
 
 self.addEventListener('install', (event) => {
   event.waitUntil(

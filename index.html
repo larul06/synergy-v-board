@@ -18,24 +18,44 @@
     <div class="match-status" id="matchStatus">Best of 3 · Sets 1-2 to 21, Set 3 to 15 (win by 2)</div>
   </header>
 
+  <nav class="tabs" id="tabs">
+    <button class="tab-btn active" data-tab="practice">Practice</button>
+    <button class="tab-btn" data-tab="tournament">Tournament</button>
+  </nav>
+
+  <section class="tournament-panel hidden" id="tournamentPanel">
+    <div class="tp-row">
+      <label for="weekSelect">Week</label>
+      <select id="weekSelect"></select>
+    </div>
+    <div class="tp-meta" id="matchMeta"></div>
+  </section>
+
   <main class="board">
     <section class="team team-a">
-      <input class="team-name" id="nameA" value="Team A" maxlength="18" />
+      <input class="team-name" id="nameA" value="Team A" maxlength="24" />
       <div class="sets-won" id="setsA">Sets: 0</div>
       <div class="score" id="scoreA">0</div>
       <div class="buttons">
-        <button class="btn minus" data-team="A" data-action="dec">−</button>
-        <button class="btn plus" data-team="A" data-action="inc">+</button>
+        <button class="btn minus" data-slot="0" data-action="dec">−</button>
+        <button class="btn plus" data-slot="0" data-action="inc">+</button>
       </div>
     </section>
 
+    <button class="swap-btn" id="swapBtn" title="Swap sides" aria-label="Swap sides">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M7 4v13M7 17l-3.5-3.5M7 17l3.5-3.5" />
+        <path d="M17 20V7M17 7l3.5 3.5M17 7l-3.5 3.5" />
+      </svg>
+    </button>
+
     <section class="team team-b">
-      <input class="team-name" id="nameB" value="Team B" maxlength="18" />
+      <input class="team-name" id="nameB" value="Team B" maxlength="24" />
       <div class="sets-won" id="setsB">Sets: 0</div>
       <div class="score" id="scoreB">0</div>
       <div class="buttons">
-        <button class="btn minus" data-team="B" data-action="dec">−</button>
-        <button class="btn plus" data-team="B" data-action="inc">+</button>
+        <button class="btn minus" data-slot="1" data-action="dec">−</button>
+        <button class="btn plus" data-slot="1" data-action="inc">+</button>
       </div>
     </section>
   </main>
@@ -48,6 +68,11 @@
     <button class="btn reset" id="resetBtn">Reset Match</button>
     <a href="#" class="share-link" id="shareLink">📱 Share this app (QR code)</a>
   </footer>
+
+  <section class="history-panel hidden" id="historyPanel">
+    <h3>Synergy Match History</h3>
+    <div id="matchHistoryList" class="match-history-list"></div>
+  </section>
 
   <div class="qr-modal" id="qrModal">
     <div class="qr-modal-content">
