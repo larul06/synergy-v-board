@@ -24,6 +24,7 @@
   <nav class="tabs" id="tabs">
     <button class="tab-btn active" data-tab="practice">Practice</button>
     <button class="tab-btn" data-tab="tournament">Tournament</button>
+    <button class="tab-btn" data-tab="rotation">Rotation</button>
   </nav>
 
   <section class="tournament-panel hidden" id="tournamentPanel">
@@ -32,7 +33,23 @@
       <select id="weekSelect"></select>
     </div>
     <div class="tp-meta" id="matchMeta"></div>
-    <button class="export-btn hidden" id="exportBtn" title="Show the schedule.json update for this result">📋 Show schedule.json update</button>
+  </section>
+
+  <section class="rotation-panel hidden" id="rotationPanel">
+    <div class="rp-system-toggle" id="rotationSystemToggle">
+      <button class="rp-cheat-btn" id="cheatBtn51" title="5-1 cheat sheet" aria-label="5-1 cheat sheet">📝</button>
+      <button class="rp-sys-btn active" data-system="5-1">5-1</button>
+      <button class="rp-sys-btn" data-system="6-2">6-2</button>
+      <button class="rp-cheat-btn" id="cheatBtn62" title="6-2 cheat sheet" aria-label="6-2 cheat sheet">📝</button>
+    </div>
+
+    <details class="rp-section" open>
+      <summary>Players</summary>
+      <div class="rp-roster-grid" id="rosterGrid"></div>
+      <div class="rp-warning hidden" id="lineupWarning">⚠️ Same position or role assigned to more than one player</div>
+    </details>
+
+    <div class="rp-rotations" id="rotationsGrid"></div>
   </section>
 
   <main class="board">
@@ -91,6 +108,13 @@
       <pre id="exportContent" class="export-content"></pre>
       <button class="btn" id="exportCopyBtn">Copy</button>
       <button class="btn" id="exportCloseBtn">Close</button>
+    </div>
+  </div>
+
+  <div class="qr-modal" id="cheatModal">
+    <div class="qr-modal-content cheat-modal-content">
+      <img id="cheatModalImg" src="" alt="Serve receive formations cheat sheet" />
+      <button class="btn" id="cheatCloseBtn">Close</button>
     </div>
   </div>
 

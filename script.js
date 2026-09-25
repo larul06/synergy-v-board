@@ -15,6 +15,11 @@ const state = {
   matchOver: false,
   tournamentGame: null, // currently selected schedule entry
   historySaved: false, // guards against double-saving a completed match
+  rotation: {
+    system: '5-1', // '5-1' | '6-2'
+    // Each player owns their name, starting court position (1-6, or null if on the bench), and role.
+    players: ['Sr', 'Mi', 'Ti', 'Zo', 'An', 'Ma', 'Lu', 'Em', 'So', 'Ma'].map(name => ({ name, position: null, role: null })),
+  },
 };
 
 let schedule = null; // loaded from schedule.json
@@ -29,12 +34,18 @@ const el = {
   resetBtn: document.getElementById('resetBtn'),
   swapBtn: document.getElementById('swapBtn'),
   tabs: document.querySelectorAll('.tab-btn'),
+  board: document.querySelector('.board'),
+  matchFooter: document.querySelector('.match-footer'),
   tournamentPanel: document.getElementById('tournamentPanel'),
   weekSelect: document.getElementById('weekSelect'),
   matchMeta: document.getElementById('matchMeta'),
   historyPanel: document.getElementById('historyPanel'),
   matchHistoryList: document.getElementById('matchHistoryList'),
-  exportBtn: document.getElementById('exportBtn'),
+  rotationPanel: document.getElementById('rotationPanel'),
+  rotationSystemToggle: document.getElementById('rotationSystemToggle'),
+  rosterGrid: document.getElementById('rosterGrid'),
+  lineupWarning: document.getElementById('lineupWarning'),
+  rotationsGrid: document.getElementById('rotationsGrid'),
 };
 
 function pointsToWin() {
@@ -199,6 +210,30 @@ qrModal.addEventListener('click', (e) => {
   if (e.target === qrModal) qrModal.classList.remove('open');
 });
 
+// ---- Rotation cheat sheet modal ----
+const cheatBtn51 = document.getElementById('cheatBtn51');
+const cheatBtn62 = document.getElementById('cheatBtn62');
+const cheatModal = document.getElementById('cheatModal');
+const cheatModalImg = document.getElementById('cheatModalImg');
+const cheatCloseBtn = document.getElementById('cheatCloseBtn');
+
+function openCheatSheet(system) {
+  cheatModalImg.src = system === '5-1' ? 'assets/cheatsheet-5-1.png' : 'assets/cheatsheet-6-2.png';
+  cheatModalImg.alt = `${system} serve receive formations cheat sheet`;
+  cheatModal.classList.add('open');
+}
+
+cheatBtn51.addEventListener('click', () => openCheatSheet('5-1'));
+cheatBtn62.addEventListener('click', () => openCheatSheet('6-2'));
+
+cheatCloseBtn.addEventListener('click', () => {
+  cheatModal.classList.remove('open');
+});
+
+cheatModal.addEventListener('click', (e) => {
+  if (e.target === cheatModal) cheatModal.classList.remove('open');
+});
+
 // ---- Export schedule.json update ----
 const exportModal = document.getElementById('exportModal');
 const exportContent = document.getElementById('exportContent');
@@ -217,10 +252,34 @@ function buildScheduleSnippet(game) {
   ].join('\n');
 }
 
-el.exportBtn.addEventListener('click', () => {
-  if (!state.tournamentGame || !state.tournamentGame.result) return;
-  exportContent.textContent = buildScheduleSnippet(state.tournamentGame);
+function openExportModalForWeek(week) {
+  const game = schedule ? schedule.games.find(g => g.week === week) : null;
+  const entry = combinedMatchHistory().find(e => e.week === week);
+  if (!entry) return;
+  const merged = {
+    week: entry.week,
+    date: entry.date,
+    time: game ? game.time : '',
+    location: game ? game.location : '',
+    opponent: entry.opponent,
+    synergyHome: entry.synergyHome,
+    bye: false,
+    result: {
+      synergySets: entry.synergySets,
+      opponentSets: entry.opponentSets,
+      synergySetsWon: entry.synergySetsWon,
+      opponentSetsWon: entry.opponentSetsWon,
+      winner: entry.winner,
+    },
+  };
+  exportContent.textContent = buildScheduleSnippet(merged);
   exportModal.classList.add('open');
+}
+
+el.matchHistoryList.addEventListener('click', (e) => {
+  const btn = e.target.closest('.mh-export-btn');
+  if (!btn) return;
+  openExportModalForWeek(Number(btn.dataset.week));
 });
 
 exportCopyBtn.addEventListener('click', async () => {
@@ -249,20 +308,33 @@ exportModal.addEventListener('click', (e) => {
 });
 
 // ---- Tabs ----
+let activeTab = 'practice';
 el.tabs.forEach(btn => {
   btn.addEventListener('click', () => {
     const tab = btn.dataset.tab;
-    if (tab === state.mode) return;
+    if (tab === activeTab) return;
     el.tabs.forEach(b => b.classList.toggle('active', b === btn));
-    state.mode = tab;
+    activeTab = tab;
+    const isScoringTab = tab === 'practice' || tab === 'tournament';
+
+    el.board.classList.toggle('hidden', !isScoringTab);
+    el.winnerBanner.classList.toggle('hidden', !isScoringTab);
+    el.matchFooter.classList.toggle('hidden', !isScoringTab);
     el.tournamentPanel.classList.toggle('hidden', tab !== 'tournament');
     el.historyPanel.classList.toggle('hidden', tab !== 'tournament');
-    resetMatch();
-    if (tab === 'tournament') {
-      populateWeekSelect();
-      autoSelectUpcomingWeek();
+    el.rotationPanel.classList.toggle('hidden', tab !== 'rotation');
+
+    if (isScoringTab) {
+      state.mode = tab;
+      resetMatch();
+      if (tab === 'tournament') {
+        populateWeekSelect();
+        autoSelectUpcomingWeek();
+      }
+      render();
+    } else if (tab === 'rotation') {
+      renderRotationTab();
     }
-    render();
   });
 });
 
@@ -330,8 +402,6 @@ function applyWeek(weekNum) {
   if (game.completed && game.result) {
     loadCompletedResultIntoView(game);
   }
-
-  el.exportBtn.classList.toggle('hidden', !(game.completed && game.result));
 
   render();
 }
@@ -442,9 +512,205 @@ function renderMatchHistory() {
       <span class="mh-opponent">vs ${e.opponent} (${homeAway})</span>
       <span class="mh-result ${outcome}">Synergy ${outcome} ${e.synergySetsWon}-${e.opponentSetsWon}</span>
       <span class="mh-sets">${setsStr}</span>
+      <button class="mh-export-btn" data-week="${e.week}" title="Show schedule.json update">📝</button>
     </div>`;
   }).join('');
 }
+
+// ---- Rotation (5-1 / 6-2 lineup builder) ----
+const ROTATION_KEY = 'synergyRotationConfig';
+const COURT_DISPLAY_ORDER = [4, 3, 2, 5, 6, 1]; // front row (near net) then back row; 1 = server
+
+const ROLE_SETS = {
+  '5-1': [
+    { code: 'OPP', label: 'OPP', full: 'Opposite (Right Side Hitter)' },
+    { code: 'OH1', label: 'OH', full: 'Outside Hitter 1' },
+    { code: 'OH2', label: 'OH', full: 'Outside Hitter 2' },
+    { code: 'MB1', label: 'MB', full: 'Middle Blocker 1' },
+    { code: 'MB2', label: 'MB', full: 'Middle Blocker 2' },
+    { code: 'S', label: 'S', full: 'Setter' },
+  ],
+  '6-2': [
+    { code: 'S1', label: 'S', full: 'Setter 1' },
+    { code: 'S2', label: 'S', full: 'Setter 2' },
+    { code: 'OH1', label: 'OH', full: 'Outside Hitter 1' },
+    { code: 'OH2', label: 'OH', full: 'Outside Hitter 2' },
+    { code: 'MB1', label: 'MB', full: 'Middle Blocker 1' },
+    { code: 'MB2', label: 'MB', full: 'Middle Blocker 2' },
+  ],
+};
+
+const ROLE_LABELS = {};
+Object.values(ROLE_SETS).flat().forEach(r => { ROLE_LABELS[r.code] = r.full; });
+
+function escapeHtml(str) {
+  return String(str).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+}
+
+function loadRotationConfig() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(ROTATION_KEY));
+    if (!saved || !Array.isArray(saved.players) || saved.players.length !== state.rotation.players.length) return;
+    state.rotation.system = saved.system === '6-2' ? '6-2' : '5-1';
+    state.rotation.players = saved.players.map(p => ({
+      name: typeof p.name === 'string' ? p.name : '',
+      position: Number.isInteger(p.position) ? p.position : null,
+      role: typeof p.role === 'string' ? p.role : null,
+    }));
+  } catch {
+    // ignore malformed saved data
+  }
+}
+
+function saveRotationConfig() {
+  localStorage.setItem(ROTATION_KEY, JSON.stringify(state.rotation));
+}
+
+function getDuplicatePlayerIndexes(field) {
+  const seenAt = {};
+  const dupes = new Set();
+  state.rotation.players.forEach((p, i) => {
+    const value = p[field];
+    if (value === null || value === undefined || value === '') return;
+    if (seenAt[value] !== undefined) {
+      dupes.add(i);
+      dupes.add(seenAt[value]);
+    } else {
+      seenAt[value] = i;
+    }
+  });
+  return dupes;
+}
+
+function renderRosterGrid() {
+  const posDupes = getDuplicatePlayerIndexes('position');
+  const roleDupes = getDuplicatePlayerIndexes('role');
+  const roleOptions = ROLE_SETS[state.rotation.system];
+  el.rosterGrid.innerHTML = state.rotation.players.map((p, i) => {
+    const posOptions = [1, 2, 3, 4, 5, 6].map(pos =>
+      `<option value="${pos}" ${p.position === pos ? 'selected' : ''}>Pos ${pos}${pos === 1 ? ' (Serve)' : ''}</option>`
+    ).join('');
+    const roleOptionsHtml = roleOptions.map(r =>
+      `<option value="${r.code}" ${p.role === r.code ? 'selected' : ''}>${r.label}</option>`
+    ).join('');
+    return `<div class="rp-player-row">
+        <input class="rp-player-input" data-idx="${i}" value="${escapeHtml(p.name)}" maxlength="12" placeholder="Player ${i + 1}" />
+        <select class="rp-role-select${roleDupes.has(i) ? ' dup' : ''}" data-idx="${i}">
+          <option value="">Role —</option>
+          ${roleOptionsHtml}
+        </select>
+        <select class="rp-pos-select${posDupes.has(i) ? ' dup' : ''}" data-idx="${i}">
+          <option value="">--</option>
+          ${posOptions}
+        </select>
+      </div>`;
+  }).join('');
+  el.lineupWarning.classList.toggle('hidden', posDupes.size === 0 && roleDupes.size === 0);
+}
+
+function remapRolesForSystem(newSystem) {
+  const validCodes = new Set(ROLE_SETS[newSystem].map(r => r.code));
+  state.rotation.players.forEach(p => {
+    if (p.role && !validCodes.has(p.role)) p.role = null;
+  });
+}
+
+function computeRotations() {
+  const starters = { 1: null, 2: null, 3: null, 4: null, 5: null, 6: null };
+  state.rotation.players.forEach((p, i) => {
+    if (p.position) starters[p.position] = i;
+  });
+  const rotations = [];
+  let current = starters;
+  for (let r = 0; r < 6; r++) {
+    rotations.push(current);
+    const next = {};
+    for (let pos = 1; pos <= 6; pos++) {
+      const sourcePos = pos === 6 ? 1 : pos + 1;
+      next[pos] = current[sourcePos];
+    }
+    current = next;
+  }
+  return rotations;
+}
+
+function renderRotations() {
+  const rotations = computeRotations();
+  el.rotationsGrid.innerHTML = rotations.map((posMap, i) => {
+    const cells = COURT_DISPLAY_ORDER.map(pos => {
+      const idx = posMap[pos];
+      const hasPlayer = idx !== null && idx !== undefined;
+      const player = hasPlayer ? state.rotation.players[idx] : null;
+      const name = player ? escapeHtml(player.name) : '—';
+      const role = player ? player.role : null;
+      const roleLabel = role ? ROLE_LABELS[role] || role : '';
+      const isServe = pos === 1;
+      return `<div class="rotation-pos${isServe ? ' serve' : ''}">
+          <span class="pos-num">${pos}</span>
+          <div class="pos-player-row">
+            <span class="pos-name">${name}</span>
+            ${role ? `<span class="role-label" title="${escapeHtml(roleLabel)}">${escapeHtml(role)}</span>` : ''}
+          </div>
+          ${isServe ? '<span class="serve-badge" title="Serving position">🏐</span>' : ''}
+        </div>`;
+    }).join('');
+    return `<div class="rotation-card">
+        <div class="rotation-card-title">Rotation ${i + 1}</div>
+        <div class="rotation-net-label">— Net —</div>
+        <div class="rotation-court">${cells}</div>
+      </div>`;
+  }).join('');
+}
+
+function renderRotationTab() {
+  el.rotationSystemToggle.querySelectorAll('.rp-sys-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.system === state.rotation.system);
+  });
+  renderRosterGrid();
+  renderRotations();
+}
+
+el.rotationSystemToggle.addEventListener('click', (e) => {
+  const btn = e.target.closest('.rp-sys-btn');
+  if (!btn || btn.dataset.system === state.rotation.system) return;
+  state.rotation.system = btn.dataset.system;
+  remapRolesForSystem(state.rotation.system);
+  el.rotationSystemToggle.querySelectorAll('.rp-sys-btn').forEach(b => b.classList.toggle('active', b === btn));
+  saveRotationConfig();
+  renderRosterGrid();
+  renderRotations();
+});
+
+el.rosterGrid.addEventListener('input', (e) => {
+  const input = e.target.closest('.rp-player-input');
+  if (!input) return;
+  const idx = Number(input.dataset.idx);
+  state.rotation.players[idx].name = input.value.trim() || `Player ${idx + 1}`;
+  saveRotationConfig();
+  renderRotations();
+});
+
+el.rosterGrid.addEventListener('change', (e) => {
+  const posSelect = e.target.closest('.rp-pos-select');
+  if (posSelect) {
+    const idx = Number(posSelect.dataset.idx);
+    state.rotation.players[idx].position = posSelect.value === '' ? null : Number(posSelect.value);
+    saveRotationConfig();
+    renderRosterGrid();
+    renderRotations();
+    return;
+  }
+  const roleSelect = e.target.closest('.rp-role-select');
+  if (roleSelect) {
+    const idx = Number(roleSelect.dataset.idx);
+    state.rotation.players[idx].role = roleSelect.value || null;
+    saveRotationConfig();
+    renderRosterGrid();
+    renderRotations();
+  }
+});
+
+loadRotationConfig();
 
 // ---- Init ----
 loadSchedule().then(() => {
